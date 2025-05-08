@@ -1,0 +1,10 @@
+# Ignore user-specific and build files
+.vs/
+bin/
+obj/
+*.user
+*.suo
+*.db
+*.mdf
+*.log
+*.pdb
