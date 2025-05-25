@@ -48,5 +48,5 @@ using (var scope = app.Services.CreateScope())
 
 app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client.");
 app.MapGrpcService<AccountService>();
-
+app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
 app.Run();

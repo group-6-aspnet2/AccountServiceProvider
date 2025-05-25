@@ -120,7 +120,7 @@ public class AccountService(UserManager<IdentityUser> userManager, ServiceBusPub
         {
             UserId = user.Id,
             Email = user.Email,
-            PhoneNumber = user.PhoneNumber,
+            PhoneNumber = !string.IsNullOrEmpty(user.PhoneNumber) ? user.PhoneNumber : "",
         };
 
         return new GetAccountByIdReply { Succeeded = true, Account = account, Message = "Account was found." };
