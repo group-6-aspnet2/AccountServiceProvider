@@ -9,6 +9,7 @@ namespace Data;
 public interface IAccountRepository
 {
 	Task<RepositoryResult<Account>> GetAccountById(string id);
+    Task<RepositoryResult<IEnumerable<Account>>> GetAllAcounts();
 }
 
 public class AccountRepository(DataContext context) : IAccountRepository
@@ -41,5 +42,36 @@ public class AccountRepository(DataContext context) : IAccountRepository
 			Debug.WriteLine($"Error in GetAccountById: {ex.Message}");
 			return null!;
 		}
+    }
+
+	public async Task<RepositoryResult<IEnumerable<Account>>> GetAllAcounts()
+	{
+		try
+		{
+			var identityUsers = await _context.Users.ToListAsync();
+			if (identityUsers == null || !identityUsers.Any())
+				return new RepositoryResult<IEnumerable<Account>>{ Succeeded = false, StatusCode = 404, Error = "No accounts found." };
+
+			var accounts = identityUsers.Select(u => new Account
+			{
+				Id = u.Id,
+				UserName = u.UserName ?? "",
+				Email = u.Email ?? "",
+				PhoneNumber = u.PhoneNumber
+			}).ToList();
+			return new RepositoryResult<IEnumerable<Account>>
+
+            {
+				Result = accounts,
+				StatusCode = 200,
+				Succeeded = true
+			};
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine($"Error in GetAllAccounts: {ex.Message}");
+			return new RepositoryResult<IEnumerable<Account>> { Succeeded = false, StatusCode = 500, Error = ex.Message };
+        }
+    
     }
 }

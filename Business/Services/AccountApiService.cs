@@ -7,6 +7,7 @@ namespace Business.Services;
 public interface IAccountApiService
 {
     Task<AccountResult<Account>> GetAccountByIdAsync(string id);
+    Task<AccountResult<IEnumerable<Account>>> GetAllAccountsAsync();
 }
 
 public class AccountApiService(IAccountRepository accountRepository) : IAccountApiService
@@ -46,6 +47,38 @@ public class AccountApiService(IAccountRepository accountRepository) : IAccountA
         {
             Debug.WriteLine(ex.Message);
             return new AccountResult<Account>
+            {
+                Succeeded = false,
+                StatusCode = 500,
+                Error = ex.Message
+            };
+        }
+    }
+
+    public async Task<AccountResult<IEnumerable<Account>>> GetAllAccountsAsync()
+    {
+        try
+        {
+            var result = await _accountRepository.GetAllAcounts(); 
+            if (!result.Succeeded)
+                return new AccountResult<IEnumerable<Account>>
+                {
+                    Succeeded = false,
+                    StatusCode = result.StatusCode,
+                    Error = result.Error
+                };
+
+            return new AccountResult<IEnumerable<Account>>
+            {
+                StatusCode = result.StatusCode,
+                Succeeded = true,
+                Result = result.Result
+            };
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+            return new AccountResult<IEnumerable<Account>>
             {
                 Succeeded = false,
                 StatusCode = 500,

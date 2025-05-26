@@ -35,4 +35,27 @@ public class AccountsController(IAccountApiService accountApiService) : Controll
             return Problem(ex.Message, statusCode: 500);
         }
     }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAllAccounts()
+    {
+        try
+        {
+            var result = await _accountApiService.GetAllAccountsAsync();
+            
+            return result.StatusCode switch
+            {
+                200 => Ok(result.Result),
+                400 => BadRequest(result.Error),
+                404 => NotFound(result.Error),
+                _ => Problem(result.Error)
+            };
+
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+            return Problem(ex.Message, statusCode: 500);
+        }
+    }
 }
